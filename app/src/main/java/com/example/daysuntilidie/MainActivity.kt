@@ -19,6 +19,14 @@ class MainActivity : AppCompatActivity() {
         val calculateButton = findViewById<Button>(R.id.calculateButton)
         val resultText = findViewById<TextView>(R.id.resultText)
 
+        // SharedPreferences for persistence
+        val sharedPreferences = getSharedPreferences("DaysUntilIDiePrefs", MODE_PRIVATE)
+
+        // Load saved data
+        birthdateInput.setText(sharedPreferences.getString("birthdate", ""))
+        expectedAgeInput.setText(sharedPreferences.getString("expectedAge", ""))
+        resultText.text = sharedPreferences.getString("result", "Days left: ")
+
         calculateButton.setOnClickListener {
             val birthdateString = birthdateInput.text.toString()
             val expectedAgeString = expectedAgeInput.text.toString()
@@ -37,11 +45,19 @@ class MainActivity : AppCompatActivity() {
                     val daysLeft = ChronoUnit.DAYS.between(today, deathDate)
 
                     // Update UI
-                    resultText.text = if (daysLeft >= 0) {
+                    val result = if (daysLeft >= 0) {
                         "Days left: $daysLeft"
                     } else {
                         "You're already ${-daysLeft / 365} years past your expected lifespan!"
                     }
+                    resultText.text = result
+
+                    // Save to SharedPreferences
+                    val editor = sharedPreferences.edit()
+                    editor.putString("birthdate", birthdateString)
+                    editor.putString("expectedAge", expectedAgeString)
+                    editor.putString("result", result)
+                    editor.apply()
                 } catch (e: Exception) {
                     resultText.text = "Invalid input. Please check your date format."
                 }
