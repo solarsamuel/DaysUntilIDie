@@ -1,5 +1,9 @@
 package com.example.daysuntilidie
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Button
@@ -27,6 +31,8 @@ class MainActivity : AppCompatActivity() {
         private const val PREF_YEAR = "pref_year"
         private const val PREF_EXPECTED_AGE = "pref_expected_age"
     }
+
+    private var screenReceiver: BroadcastReceiver? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,23 +64,26 @@ class MainActivity : AppCompatActivity() {
                 saveInputToPreferences(month, day, year, expectedAge)
 
                 // Calculate days left
-                val birthdate = LocalDate.of(year, month, day)
-                val deathDate = birthdate.plusYears(expectedAge.toLong())
-                val today = LocalDate.now()
-                val daysLeft = ChronoUnit.DAYS.between(today, deathDate)
-
-                val result = if (daysLeft >= 0) {
-                    "Days left: $daysLeft"
-                } else {
-                    "You're already ${-daysLeft / 365} years past your expected lifespan!"
-                }
-
-                resultText.text = result
+                calculateDaysLeft()
 
             } catch (e: Exception) {
                 resultText.text = e.message
             }
         }
+
+        // Register screen ON receiver to update the widget
+        screenReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                if (intent.action == Intent.ACTION_SCREEN_ON) {
+                    calculateDaysLeft()
+                }
+            }
+        }?.also { registerReceiver(it, IntentFilter(Intent.ACTION_SCREEN_ON)) }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        screenReceiver?.let { unregisterReceiver(it) }
     }
 
     private fun loadSavedData() {
