@@ -5,12 +5,34 @@
     android:layout_height="match_parent">
 
     <EditText
-        android:id="@+id/birthdateInput"
+        android:id="@+id/monthInput"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Enter birthdate (YYYY-MM-DD)"
-        android:inputType="date"
+        android:hint="Enter Month"
+        android:inputType="number"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp" />
+
+    <EditText
+        android:id="@+id/dayInput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Enter Day"
+        android:inputType="number"
+        app:layout_constraintTop_toBottomOf="@id/monthInput"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp" />
+
+    <EditText
+        android:id="@+id/yearInput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Enter Year"
+        android:inputType="number"
+        app:layout_constraintTop_toBottomOf="@id/dayInput"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="16dp" />
@@ -21,7 +43,7 @@
         android:layout_height="wrap_content"
         android:hint="Expected age of death"
         android:inputType="number"
-        app:layout_constraintTop_toBottomOf="@id/birthdateInput"
+        app:layout_constraintTop_toBottomOf="@id/yearInput"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="16dp" />

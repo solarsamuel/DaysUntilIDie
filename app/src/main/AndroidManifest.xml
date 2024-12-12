@@ -36,5 +36,15 @@
                 android:resource="@xml/widget_info" />
         </receiver>
 
+        <receiver android:name=".ScreenReceiver" android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+
+                <action android:name="android.intent.action.SCREEN_ON" />
+            </intent-filter>
+        </receiver>
+
+
+
     </application>
 </manifest>
