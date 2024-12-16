@@ -86,7 +86,7 @@ class MainActivity : AppCompatActivity() {
         screenReceiver?.let { unregisterReceiver(it) }
     }
 
-    private fun loadSavedData() {
+    fun loadSavedData() {
         val month = sharedPreferences.getInt(PREF_MONTH, -1)
         val day = sharedPreferences.getInt(PREF_DAY, -1)
         val year = sharedPreferences.getInt(PREF_YEAR, -1)
@@ -116,7 +116,7 @@ class MainActivity : AppCompatActivity() {
         if (year !in 1900..2023) throw IllegalArgumentException("Invalid year. Please enter a valid year.")
     }
 
-    private fun calculateDaysLeft() {
+    fun calculateDaysLeft() {
         val month = sharedPreferences.getInt(PREF_MONTH, -1)
         val day = sharedPreferences.getInt(PREF_DAY, -1)
         val year = sharedPreferences.getInt(PREF_YEAR, -1)
@@ -137,6 +137,7 @@ class MainActivity : AppCompatActivity() {
             resultText.text = result
 
             // Update the widget
+            //DaysWidgetProvider.updateAllWidgets(this)
             DaysWidgetProvider.updateAllWidgets(this)
         }
     }
