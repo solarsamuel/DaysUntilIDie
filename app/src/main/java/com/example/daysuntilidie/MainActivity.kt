@@ -25,11 +25,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPreferences
 
     companion object {
-        private const val PREFS_NAME = "DaysUntilIDiePrefs"
-        private const val PREF_MONTH = "pref_month"
-        private const val PREF_DAY = "pref_day"
-        private const val PREF_YEAR = "pref_year"
-        private const val PREF_EXPECTED_AGE = "pref_expected_age"
+        const val PREFS_NAME = "DaysUntilIDiePrefs"
+        const val PREF_MONTH = "pref_month"
+        const val PREF_DAY = "pref_day"
+        const val PREF_YEAR = "pref_year"
+        const val PREF_EXPECTED_AGE = "pref_expected_age"
     }
 
     private var screenReceiver: BroadcastReceiver? = null
@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity() {
                     calculateDaysLeft()
                 }
             }
-        }?.also { registerReceiver(it, IntentFilter(Intent.ACTION_SCREEN_ON)) }
+        }.also { registerReceiver(it, IntentFilter(Intent.ACTION_SCREEN_ON)) }
     }
 
     override fun onDestroy() {
@@ -135,6 +135,9 @@ class MainActivity : AppCompatActivity() {
             }
 
             resultText.text = result
+
+            // Update the widget
+            DaysWidgetProvider.updateAllWidgets(this)
         }
     }
 }

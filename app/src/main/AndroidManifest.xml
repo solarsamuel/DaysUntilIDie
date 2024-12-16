@@ -26,14 +26,14 @@
 
         <!-- Widget Receiver -->
         <receiver
-            android:name=".DaysWidgetProvider"
+            android:name=".DaysLeftWidget"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/widget_info" />
+                android:resource="@xml/days_left_widget_info" />
         </receiver>
 
         <receiver android:name=".ScreenReceiver" android:enabled="true"

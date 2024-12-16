@@ -58,6 +58,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.9.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
+    //implementation "org.jetbrains.kotlin:kotlin-stdlib:1.x.x" // Use your Kotlin version
 
 
     // Lifecycle and Activity

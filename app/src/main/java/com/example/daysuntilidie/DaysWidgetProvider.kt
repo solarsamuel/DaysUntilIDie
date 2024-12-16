@@ -1,66 +1,71 @@
 package com.example.daysuntilidie
 
+import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.widget.RemoteViews
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 class DaysWidgetProvider : AppWidgetProvider() {
-    override fun onUpdate(
-        context: Context,
-        appWidgetManager: AppWidgetManager,
-        appWidgetIds: IntArray
-    ) {
-        super.onUpdate(context, appWidgetManager, appWidgetIds)
-        updateWidget(context, appWidgetManager, appWidgetIds)
+
+    override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
+        for (appWidgetId in appWidgetIds) {
+            updateAppWidget(context, appWidgetManager, appWidgetId)
+        }
     }
 
     companion object {
-        fun updateWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
-            val sharedPreferences = context.getSharedPreferences("DaysUntilIDiePrefs", Context.MODE_PRIVATE)
-            val resultText = sharedPreferences.getString("result", "Days left: ")
+        @JvmStatic
+        private fun calculateDaysLeft(context: Context): String {
+            val sharedPreferences = context.getSharedPreferences(MainActivity.PREFS_NAME, Context.MODE_PRIVATE)
+            val month = sharedPreferences.getInt(MainActivity.PREF_MONTH, -1)
+            val day = sharedPreferences.getInt(MainActivity.PREF_DAY, -1)
+            val year = sharedPreferences.getInt(MainActivity.PREF_YEAR, -1)
+            val expectedAge = sharedPreferences.getInt(MainActivity.PREF_EXPECTED_AGE, -1)
 
-            for (appWidgetId in appWidgetIds) {
-                val views = RemoteViews(context.packageName, R.layout.widget_layout)
-                views.setTextViewText(R.id.widgetTextView, resultText)
+            if (month == -1 || day == -1 || year == -1 || expectedAge == -1) {
+                return "Set data in app"
+            }
 
-                appWidgetManager.updateAppWidget(appWidgetId, views)
+            val birthdate = LocalDate.of(year, month, day)
+            val deathDate = birthdate.plusYears(expectedAge.toLong())
+            val today = LocalDate.now()
+            val daysLeft = ChronoUnit.DAYS.between(today, deathDate)
+
+            return if (daysLeft >= 0) {
+                "Days left: $daysLeft"
+            } else {
+                "Past expected age"
             }
         }
 
-        fun updateDaysWidget(context: Context) {
-            val sharedPreferences = context.getSharedPreferences("DaysUntilIDiePrefs", Context.MODE_PRIVATE)
-            val birthdateString = sharedPreferences.getString("birthdate", "")
-            val expectedAge = sharedPreferences.getInt("expectedAge", 0)
+        @JvmStatic
+        fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
+            val daysLeft = calculateDaysLeft(context)
 
-            if (!birthdateString.isNullOrEmpty() && expectedAge > 0) {
-                try {
-                    val birthdate = LocalDate.parse(birthdateString, DateTimeFormatter.ISO_DATE)
-                    val deathDate = birthdate.plusYears(expectedAge.toLong())
-                    val daysLeft = ChronoUnit.DAYS.between(LocalDate.now(), deathDate)
+            val views = RemoteViews(context.packageName, R.layout.days_left_widget)
+            views.setTextViewText(R.id.widget_days_left, daysLeft)
 
-                    val appWidgetManager = AppWidgetManager.getInstance(context)
-                    val remoteViews = RemoteViews(context.packageName, R.layout.widget_layout)
-                    remoteViews.setTextViewText(R.id.widgetTextView, "Days left: $daysLeft")
+            // Launch MainActivity when the widget is clicked
+            val intent = Intent(context, MainActivity::class.java)
+            val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+            views.setOnClickPendingIntent(R.id.widget_days_left, pendingIntent)
 
-                    val thisWidget = ComponentName(context, DaysWidgetProvider::class.java)
-                    appWidgetManager.updateAppWidget(thisWidget, remoteViews)
-                } catch (e: Exception) {
-                    e.printStackTrace()
+            appWidgetManager.updateAppWidget(appWidgetId, views)
+        }
 
-                    val appWidgetManager = AppWidgetManager.getInstance(context)
-                    val remoteViews = RemoteViews(context.packageName, R.layout.widget_layout)
-                    remoteViews.setTextViewText(R.id.widgetTextView, "Error: Invalid data.")
-
-                    val thisWidget = ComponentName(context, DaysWidgetProvider::class.java)
-                    appWidgetManager.updateAppWidget(thisWidget, remoteViews)
-                }
+        @JvmStatic
+        fun updateAllWidgets(context: Context) {
+            val appWidgetManager = AppWidgetManager.getInstance(context)
+            val componentName = ComponentName(context, DaysWidgetProvider::class.java)
+            val appWidgetIds = appWidgetManager.getAppWidgetIds(componentName)
+            for (appWidgetId in appWidgetIds) {
+                updateAppWidget(context, appWidgetManager, appWidgetId)
             }
         }
     }
 }
-
