@@ -7,6 +7,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
+import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -37,7 +38,9 @@ class DaysWidgetProvider : AppWidgetProvider() {
             val daysLeft = ChronoUnit.DAYS.between(today, deathDate)
 
             return if (daysLeft >= 0) {
-                "Days left: $daysLeft"
+                // Format the daysLeft with commas
+                val formattedDaysLeft = NumberFormat.getInstance().format(daysLeft)
+                "Days left: $formattedDaysLeft"
             } else {
                 "Past expected age"
             }

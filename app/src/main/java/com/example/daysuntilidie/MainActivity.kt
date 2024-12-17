@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -128,16 +129,20 @@ class MainActivity : AppCompatActivity() {
             val today = LocalDate.now()
             val daysLeft = ChronoUnit.DAYS.between(today, deathDate)
 
+            val numberFormat = NumberFormat.getInstance()
+            val formattedDaysLeft = numberFormat.format(daysLeft)
+
             val result = if (daysLeft >= 0) {
-                "Days left: $daysLeft"
+                "Days left: $formattedDaysLeft"
             } else {
-                "You're already ${-daysLeft / 365} years past your expected lifespan!"
+                val yearsPast = -daysLeft / 365
+                val formattedYearsPast = numberFormat.format(yearsPast)
+                "You're already $formattedYearsPast years past your expected lifespan!"
             }
 
             resultText.text = result
 
             // Update the widget
-            //DaysWidgetProvider.updateAllWidgets(this)
             DaysWidgetProvider.updateAllWidgets(this)
         }
     }
